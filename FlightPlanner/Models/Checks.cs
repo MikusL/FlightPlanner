@@ -107,19 +107,9 @@ namespace FlightPlanner.Models
             if (requestDepartureTime.Length < flightDepartureTime.Length)
             {
                 flightDepartureTime = flightDepartureTime.Substring(0, requestDepartureTime.Length);
-
-                if (flightDepartureTime == requestDepartureTime)
-                {
-                    return true;
-                }
             }
 
-            if (requestDepartureTime == flightDepartureTime)
-            {
-                return true;
-            }
-
-            return false;
+            return requestDepartureTime == flightDepartureTime;
         }
 
         public static string StringClean(string result)

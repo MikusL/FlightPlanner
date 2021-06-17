@@ -1,53 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using FlightPlanner.DBContext;
 
 namespace FlightPlanner.Models
 {
     public static class FlightStorage
     {
-        public static IList<Flight> FlightList = new List<Flight>();
         private static readonly object _padlock = new object();
-        private static int _id;
+        public static int Id;
 
-        public static Flight AddFlight(Flight flight)
+        public static Flight AddFlight(Flight flight, FlightPlannerDbContext ctx)
         {
-            foreach (var existingFlight in FlightList)
-            {
-                if (Checks.FlightEquals(existingFlight,flight))
-                {
-                    return flight;
-                }
-            }
-
-            flight.Id = ++_id;
-            FlightList.Add(flight);
+            flight.Id = ++Id;
+            ctx.Flights.Add(flight);
+            ctx.SaveChanges();
             return flight;
         }
 
-        public static Flight FindFlight(int id)
+        public static Flight FindFlight(int id, FlightPlannerDbContext ctx)
         {
             lock (_padlock)
             {
-                return FlightList.FirstOrDefault(x => x.Id == id); 
+                return ctx.Flights.Include(f=>f.To).Include(f=>f.From).FirstOrDefault(x => x.Id == id); 
             }
         }
 
-        public static PageResult FindFlightsByRequest(SearchFlightsRequest request)
+        public static PageResult FindFlightsByRequest(SearchFlightsRequest request, FlightPlannerDbContext ctx)
         {
             var result = new PageResult();
 
-            foreach (var flight in FlightList)
+            var flightList = ctx.Flights.Include(f => f.From).Include(f => f.To).ToList();
+
+            foreach (var flight in flightList)
             {
-                if (Checks.FlightRequestCheck(request,flight))
-                {
-                    result.Items.Add(flight);
-                    result.TotalItems++;
-                }
+                if (!Checks.FlightRequestCheck(request, flight)) continue;
+
+                result.Items.Add(flight);
+                result.TotalItems++;
             }
 
             return result;
+        }
+
+        public static Flight TransformAddFlightRequestToFlight(AddFlightRequest request)
+        {
+            Flight result = new Flight
+            (
+                request.From,
+                request.To,
+                request.Carrier,
+                request.DepartureTime,
+                request.ArrivalTime
+            );
+
+            return result;
+        }
+
+        public static bool ChecksIfFlightAlreadyExist(Flight flight, FlightPlannerDbContext ctx)
+        {
+            var flightList = ctx.Flights.Include(f => f.From).Include(f => f.To).ToList();
+
+            return flightList.Any(f => Checks.FlightEquals(f, flight));
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using FlightPlanner.Attributes;
+using FlightPlanner.DBContext;
 using FlightPlanner.Models;
 using Microsoft.Ajax.Utilities;
 
@@ -15,9 +17,12 @@ namespace FlightPlanner.Controllers
         [BasicAuthentication]
         public IHttpActionResult GetFlights(int id)
         {
-            var flight = FlightStorage.FindFlight(id);
+            using (var ctx = new FlightPlannerDbContext())
+            {
+                var flight = FlightStorage.FindFlight(id,ctx);
 
-            return flight == null ? (IHttpActionResult) NotFound() : Ok(flight);
+                return flight == null ? (IHttpActionResult)NotFound() : Ok(flight); 
+            }
         }
 
         [Route("admin-api/flights/{id}")]
@@ -26,14 +31,16 @@ namespace FlightPlanner.Controllers
         {
             lock (_padlock)
             {
-                var flight = FlightStorage.FindFlight(id);
-
-                if (flight != null)
+                using (var ctx = new FlightPlannerDbContext())
                 {
-                    FlightStorage.FlightList.Remove(flight);
-                }
+                    var flight = FlightStorage.FindFlight(id, ctx);
 
-                return Ok(); 
+                    if (flight != null) ctx.Flights.Remove(flight);
+
+                    ctx.SaveChanges();
+
+                    return Ok();  
+                }
             }
         }
 
@@ -43,35 +50,21 @@ namespace FlightPlanner.Controllers
         {
             lock (_padlock)
             {
-                Flight result = new Flight
-                        (
-                        newFlight.From,
-                        newFlight.To,
-                        newFlight.Carrier,
-                        newFlight.DepartureTime,
-                        newFlight.ArrivalTime
-                        );
-
-                if (Checks.FlightNullCheck(result))
+                using (var ctx = new FlightPlannerDbContext())
                 {
-                    return BadRequest();
+                    Flight result = FlightStorage.TransformAddFlightRequestToFlight(newFlight);
+
+                    if (Checks.FlightNullCheck(result)) return BadRequest();
+
+                    if (FlightStorage.ChecksIfFlightAlreadyExist(result, ctx)) return Conflict();
+
+                    AirportStorage.AddAirport(result.To, ctx);
+                    AirportStorage.AddAirport(result.From, ctx);
+
+                    ctx.SaveChanges();
+
+                    return Created(string.Empty, FlightStorage.AddFlight(result,ctx));  
                 }
-
-                if (FlightStorage.FlightList.Count != 0)
-                {
-                    foreach (var flight in FlightStorage.FlightList)
-                    {
-                        if (Checks.FlightEquals(flight, result))
-                        {
-                            return Conflict();
-                        }
-                    }
-                }
-
-                AirportStorage.AddAirport(result.To);
-                AirportStorage.AddAirport(result.From);
-
-                return Created(string.Empty, FlightStorage.AddFlight(result)); 
             }
         }
     }

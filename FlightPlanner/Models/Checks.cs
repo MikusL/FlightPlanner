@@ -8,28 +8,18 @@ namespace FlightPlanner.Models
         private static readonly object _padlock = new object();
         public static bool FlightEquals(Flight first, Flight second)
         {
-            if (AirportEquals(first.To, second.To) &&
-                AirportEquals(first.From, second.From) &&
-                StringClean(first.Carrier) == StringClean(second.Carrier) &&
-                StringClean(first.ArrivalTime) == StringClean(second.ArrivalTime) &&
-                StringClean(first.DepartureTime) == StringClean(second.DepartureTime))
-            {
-                return true;
-            }
-
-            return false;
+            return AirportEquals(first.To, second.To) &&
+                   AirportEquals(first.From, second.From) &&
+                   StringClean(first.Carrier) == StringClean(second.Carrier) &&
+                   StringClean(first.ArrivalTime) == StringClean(second.ArrivalTime) &&
+                   StringClean(first.DepartureTime) == StringClean(second.DepartureTime);
         }
 
         public static bool AirportEquals(Airport first, Airport second)
         {
             lock (_padlock)
             {
-                if (StringClean(first.AirportName) == StringClean(second.AirportName))
-                {
-                    return true;
-                }
-
-                return false; 
+                return StringClean(first.AirportName) == StringClean(second.AirportName);
             }
         }
 
@@ -54,49 +44,29 @@ namespace FlightPlanner.Models
             var temp = DateTime.Parse(flight.DepartureTime);
             var temp2 = DateTime.Parse(flight.ArrivalTime);
 
-            if (temp2.Subtract(temp).TotalMinutes <= 0)
-            {
-                return true;
-            }
-
-            return false;
+            return temp2.Subtract(temp).TotalMinutes <= 0;
         }
 
         public static bool AirportPropNullCheck(Airport airport)
         {
-            if (airport.City.IsNullOrWhiteSpace() ||
-                airport.AirportName.IsNullOrWhiteSpace() ||
-                airport.Country.IsNullOrWhiteSpace())
-            {
-                return true;
-            }
-
-            return false;
+            return airport.City.IsNullOrWhiteSpace() ||
+                   airport.AirportName.IsNullOrWhiteSpace() ||
+                   airport.Country.IsNullOrWhiteSpace();
         }
 
         public static bool FlightRequestCheck(SearchFlightsRequest request, Flight flight)
         {
-            if (StringClean(flight.To.AirportName) == StringClean(request.To) &&
-                StringClean(flight.From.AirportName) == StringClean(request.From) &&
-                DepartureTimeEquals(StringClean(request.DepartureTime),StringClean(flight.DepartureTime)))
-            {
-                return true;
-            }
-
-            return false;
+            return StringClean(flight.To.AirportName) == StringClean(request.To) &&
+                   StringClean(flight.From.AirportName) == StringClean(request.From) &&
+                   DepartureTimeEquals(StringClean(request.DepartureTime),StringClean(flight.DepartureTime));
         }
 
         public static bool SearchFlightRequestNullCheck(SearchFlightsRequest request)
         {
-            if (request.From == null ||
-                request.To == null ||
-                StringClean(request.To) == StringClean(request.From) ||
-                request.DepartureTime == null)
-            {
-                return true;
-            }
-
-            return false;
+            return request == null || request.From == null ||
+                   request.To == null ||
+                   StringClean(request.To) == StringClean(request.From) ||
+                   request.DepartureTime == null;
         }
 
         public static bool DepartureTimeEquals(string requestDepartureTime, string flightDepartureTime)

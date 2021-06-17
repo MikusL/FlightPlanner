@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using FlightPlanner.Models;
+﻿using System.Web.Http;
+using FlightPlanner.DBContext;
 
 namespace FlightPlanner.Controllers
 {
@@ -13,9 +8,13 @@ namespace FlightPlanner.Controllers
         [Route("testing-api/clear"),HttpPost]
         public IHttpActionResult Clear()
         {
-            FlightStorage.FlightList.Clear();
-            AirportStorage.AirportList.Clear();
-            return Ok();
+            using (var ctx = new FlightPlannerDbContext())
+            {
+                ctx.Flights.RemoveRange(ctx.Flights);
+                ctx.Airports.RemoveRange(ctx.Airports);
+                ctx.SaveChanges();
+                return Ok(); 
+            }
         }
     }
 }

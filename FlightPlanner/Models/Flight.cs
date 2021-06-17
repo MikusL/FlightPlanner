@@ -22,5 +22,10 @@ namespace FlightPlanner.Models
             DepartureTime = departureTime;
             ArrivalTime = arrivalTime;
         }
+
+        public Flight()
+        {
+
+        }
     }
 }

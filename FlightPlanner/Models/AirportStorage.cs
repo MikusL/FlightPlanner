@@ -3,53 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using FlightPlanner.Areas.HelpPage;
+using FlightPlanner.DBContext;
 
 namespace FlightPlanner.Models
 {
     public class AirportStorage
     {
-        public static IList<Airport> AirportList = new List<Airport>();
         private static readonly object _padlock = new object();
         private static bool _contains;
 
-        public static void AddAirport(Airport airport)
+        public static void AddAirport(Airport airport, FlightPlannerDbContext ctx)
         {
             lock (_padlock)
             {
                 _contains = false;
 
-                foreach (var existingAirport in AirportList)
-                {
-                    if (Checks.AirportEquals(existingAirport, airport))
-                    {
-                        _contains = true;
-                        break;
-                    }
-                }
+                if (ChecksIfAirportAlreadyExists(airport, ctx)) _contains = true;
 
-                if (!_contains)
-                {
-                    AirportList.Add(airport);
-                } 
+                if (!_contains) ctx.Airports.Add(airport);
             }
         }
 
-        public static List<Airport> FindAirportByPhrase(string phrase)
+        public static List<Airport> FindAirportByPhrase(string phrase, FlightPlannerDbContext ctx)
         {
             phrase = Checks.StringClean(phrase);
-            List<Airport> result = new List<Airport>();
 
-            foreach (var airport in AirportList)
-            {
-                if (Checks.StringClean(airport.AirportName).Contains(phrase) ||
-                    Checks.StringClean(airport.City).Contains(phrase) ||
-                    Checks.StringClean(airport.Country).Contains(phrase))
-                {
-                    result.Add(airport);
-                }
-            }
-            
-            return result;
+            return ctx.Airports.Where(airport => airport.AirportName.ToLower().Contains(phrase) || airport.City.ToLower().Contains(phrase) || airport.Country.ToLower().Contains(phrase)).ToList();
+        }
+
+        public static bool ChecksIfAirportAlreadyExists(Airport airport, FlightPlannerDbContext ctx)
+        {
+            var airportList = ctx.Airports.ToList();
+
+            return airportList.Any(a => Checks.AirportEquals(a,airport));
         }
     }
 }

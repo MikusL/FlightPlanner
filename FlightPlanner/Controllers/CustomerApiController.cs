@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using FlightPlanner.Attributes;
+using FlightPlanner.DBContext;
 using FlightPlanner.Models;
 
 namespace FlightPlanner.Controllers
@@ -14,30 +15,36 @@ namespace FlightPlanner.Controllers
         [Route("api/airports")]
         public IHttpActionResult GetAirports(string search)
         {
-            var airport = AirportStorage.FindAirportByPhrase(search);
+            using (var ctx = new FlightPlannerDbContext())
+            {
+                var airport = AirportStorage.FindAirportByPhrase(search, ctx);
 
-            return airport.Count == 0 ? (IHttpActionResult)NotFound() : Ok(airport);
+                return airport.Count == 0 ? (IHttpActionResult)NotFound() : Ok(airport); 
+            }
         }
 
         [Route("api/flights/{id}")]
         public IHttpActionResult GetFlightById(int id)
         {
-            var flight = FlightStorage.FindFlight(id);
+            using (var ctx = new FlightPlannerDbContext())
+            {
+                var flight = FlightStorage.FindFlight(id,ctx);
 
-            return flight == null ? (IHttpActionResult)NotFound() : Ok(flight);
+                return flight == null ? (IHttpActionResult)NotFound() : Ok(flight); 
+            }
         }
 
         [Route("api/flights/search")]
         public IHttpActionResult PostFlights(SearchFlightsRequest req)
         {
-            if (req == null || Checks.SearchFlightRequestNullCheck(req))
+            using (var ctx = new FlightPlannerDbContext())
             {
-                return BadRequest();
+                if (Checks.SearchFlightRequestNullCheck(req)) return BadRequest();
+
+                var result = FlightStorage.FindFlightsByRequest(req, ctx);
+
+                return Ok(result); 
             }
-
-            var result = FlightStorage.FindFlightsByRequest(req);
-
-            return Ok(result);
         }
     }
 }

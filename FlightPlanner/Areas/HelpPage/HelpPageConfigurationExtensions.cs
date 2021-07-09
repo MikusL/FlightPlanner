@@ -1,3 +1,6 @@
+using FlightPlanner.Areas.HelpPage.ModelDescriptions;
+using FlightPlanner.Areas.HelpPage.Models;
+using FlightPlanner.Areas.HelpPage.SampleGeneration;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,8 +14,6 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
-using FlightPlanner.Areas.HelpPage.ModelDescriptions;
-using FlightPlanner.Areas.HelpPage.Models;
 
 namespace FlightPlanner.Areas.HelpPage
 {

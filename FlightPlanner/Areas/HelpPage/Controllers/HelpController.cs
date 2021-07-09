@@ -1,8 +1,8 @@
+using FlightPlanner.Areas.HelpPage.ModelDescriptions;
+using FlightPlanner.Areas.HelpPage.Models;
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using FlightPlanner.Areas.HelpPage.ModelDescriptions;
-using FlightPlanner.Areas.HelpPage.Models;
 
 namespace FlightPlanner.Areas.HelpPage.Controllers
 {

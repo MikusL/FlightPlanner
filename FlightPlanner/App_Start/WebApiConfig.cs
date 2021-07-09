@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json.Serialization;
 using System.Web.Http;
-using Newtonsoft.Json.Serialization;
 
 namespace FlightPlanner
 {
@@ -14,6 +11,8 @@ namespace FlightPlanner
 
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
+
+            config.EnableCors();
 
             // Web API routes
             config.MapHttpAttributeRoutes();

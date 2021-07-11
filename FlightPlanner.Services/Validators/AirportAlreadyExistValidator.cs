@@ -14,12 +14,7 @@ namespace FlightPlanner.Services.Validators
         }
         private static bool AirportEquals(Airport first, Airport second)
         {
-            return StringClean(first.AirportName) == StringClean(second.AirportName);
-        }
-
-        private static string StringClean(string result)
-        {
-            return result.Trim().ToLower();
+            return Helper.CleanString(first.AirportName) == Helper.CleanString(second.AirportName);
         }
     }
 }

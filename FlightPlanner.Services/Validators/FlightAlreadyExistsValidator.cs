@@ -17,19 +17,14 @@ namespace FlightPlanner.Services.Validators
         {
             return AirportEquals(first.To, second.To) &&
                    AirportEquals(first.From, second.From) &&
-                   StringClean(first.Carrier) == StringClean(second.Carrier) &&
-                   StringClean(first.ArrivalTime) == StringClean(second.ArrivalTime) &&
-                   StringClean(first.DepartureTime) == StringClean(second.DepartureTime);
+                   Helper.CleanString(first.Carrier) == Helper.CleanString(second.Carrier) &&
+                   Helper.CleanString(first.ArrivalTime) == Helper.CleanString(second.ArrivalTime) &&
+                   Helper.CleanString(first.DepartureTime) == Helper.CleanString(second.DepartureTime);
         }
 
         private static bool AirportEquals(Airport first, Airport second)
         {
-            return StringClean(first.AirportName) == StringClean(second.AirportName);
-        }
-
-        private static string StringClean(string result)
-        {
-            return result.Trim().ToLower();
+            return Helper.CleanString(first.AirportName) == Helper.CleanString(second.AirportName);
         }
     }
 }

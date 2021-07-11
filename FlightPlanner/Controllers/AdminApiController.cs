@@ -7,9 +7,11 @@ using FlightPlanner.Services.Validators;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace FlightPlanner.Controllers
 {
+    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
     public class AdminApiController : ApiController
     {
         private static readonly object Padlock = new object();
@@ -50,7 +52,9 @@ namespace FlightPlanner.Controllers
             {
                 var flight = _flightService.GetFullFlight(id);
 
-                if (flight != null) _flightService.DeleteFlight(flight);
+                if (flight == null) return NotFound();
+
+                _flightService.DeleteFlight(flight);
 
                 return Ok();
             }

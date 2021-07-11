@@ -26,6 +26,8 @@ namespace FlightPlanner.Controllers
         [HttpGet]
         public IHttpActionResult GetAirports(string search)
         {
+            if (search == null) return BadRequest();
+
             var airport = _airportService.FindAirportByPhrase(search);
 
             return airport.Count == 0 ? (IHttpActionResult)NotFound() : Ok(airport.Select(a => _mapper.Map<AirportDto>(a)).ToList());
@@ -47,6 +49,8 @@ namespace FlightPlanner.Controllers
             if (SearchRequestValidator.Validate(request)) return BadRequest();
 
             var result = _flightService.FindFlightsByRequest(request, _mapper);
+
+            if (result.TotalItems == 0) return NotFound();
 
             return Ok(result);
         }

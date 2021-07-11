@@ -7,10 +7,9 @@ using System.Linq;
 
 namespace FlightPlanner.Services
 {
-    public class AirportService : EntityService<Flight>, IAirportService
+    public class AirportService : EntityService<Airport>, IAirportService
     {
         private readonly FlightPlannerDbContext _context;
-        private bool _contains;
 
         public AirportService(FlightPlannerDbContext context) : base(context)
         {
@@ -19,11 +18,7 @@ namespace FlightPlanner.Services
 
         public void AddAirport(Airport airport)
         {
-            _contains = false;
-
-            if (AirportAlreadyExistValidator.Validate(airport, _context)) _contains = true;
-
-            if (_contains) return;
+            if (AirportAlreadyExistValidator.Validate(airport, _context)) return;
 
             _context.Airports.Add(airport);
             _context.SaveChanges();
@@ -31,11 +26,18 @@ namespace FlightPlanner.Services
 
         public List<Airport> FindAirportByPhrase(string phrase)
         {
-            phrase = phrase.ToLower().Trim();
+            phrase = Helper.CleanString(phrase);
 
             return _context.Airports.Where(airport => airport.AirportName.ToLower().Contains(phrase) ||
                                                       airport.City.ToLower().Contains(phrase) ||
                                                       airport.Country.ToLower().Contains(phrase)).ToList();
+        }
+
+        public static Airport FindAirportByName(Airport airport, IFlightPlannerDbContext context)
+        {
+            var result = context.Airports.FirstOrDefault(f => airport.AirportName == f.AirportName);
+
+            return result ?? airport;
         }
     }
 }

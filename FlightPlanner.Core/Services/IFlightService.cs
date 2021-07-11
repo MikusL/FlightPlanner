@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using FlightPlanner.Core.Dto;
 using FlightPlanner.Core.Models;
 

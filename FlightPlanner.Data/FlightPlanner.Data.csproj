@@ -114,9 +114,9 @@
   <ItemGroup>
     <Compile Include="FlightPlannerDBContext.cs" />
     <Compile Include="IFlightPlannerDbContext.cs" />
-    <Compile Include="Migrations\202107081932282_Init.cs" />
-    <Compile Include="Migrations\202107081932282_Init.designer.cs">
-      <DependentUpon>202107081932282_Init.cs</DependentUpon>
+    <Compile Include="Migrations\202107111432270_Init.cs" />
+    <Compile Include="Migrations\202107111432270_Init.designer.cs">
+      <DependentUpon>202107111432270_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -132,8 +132,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202107081932282_Init.resx">
-      <DependentUpon>202107081932282_Init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202107111432270_Init.resx">
+      <DependentUpon>202107111432270_Init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

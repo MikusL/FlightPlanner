@@ -8,13 +8,8 @@ namespace FlightPlanner.Services.Validators
         {
             return request == null || request.From == null ||
                    request.To == null ||
-                   StringClean(request.To) == StringClean(request.From) ||
+                   Helper.CleanString(request.To) == Helper.CleanString(request.From) ||
                    request.DepartureTime == null;
-        }
-
-        private static string StringClean(string result)
-        {
-            return result.Trim().ToLower();
         }
     }
 }

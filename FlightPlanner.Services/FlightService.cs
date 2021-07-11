@@ -20,6 +20,8 @@ namespace FlightPlanner.Services
         public Flight AddFlight(Flight flight)
         {
             flight.Id = ++_id;
+            flight.To = AirportService.FindAirportByName(flight.To, _context);
+            flight.From = AirportService.FindAirportByName(flight.From, _context);
             Create(flight);
             return flight;
         }
@@ -52,7 +54,7 @@ namespace FlightPlanner.Services
 
         public Flight TransformAddFlightRequestToFlight(AddFlightRequest request, IMapper mapper)
         {
-            Flight result = new Flight();
+            var result = new Flight();
             mapper.Map(request, result);
             return result;
         }

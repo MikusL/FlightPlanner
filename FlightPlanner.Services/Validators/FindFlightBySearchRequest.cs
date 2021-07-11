@@ -7,15 +7,15 @@ namespace FlightPlanner.Services.Validators
     {
         public static bool Find(SearchFlightsRequest request, Flight flight)
         {
-            return StringClean(flight.To.AirportName) == StringClean(request.To) &&
-                   StringClean(flight.From.AirportName) == StringClean(request.From) &&
-                   DepartureTimeEquals(StringClean(request.DepartureTime), StringClean(flight.DepartureTime));
+            return Helper.CleanString(flight.To.AirportName) == Helper.CleanString(request.To) &&
+                   Helper.CleanString(flight.From.AirportName) == Helper.CleanString(request.From) &&
+                   DepartureTimeEquals(Helper.CleanString(request.DepartureTime), Helper.CleanString(flight.DepartureTime));
         }
 
         private static bool DepartureTimeEquals(string requestDepartureTime, string flightDepartureTime)
         {
-            requestDepartureTime = StringClean(requestDepartureTime);
-            flightDepartureTime = StringClean(flightDepartureTime);
+            requestDepartureTime = Helper.CleanString(requestDepartureTime);
+            flightDepartureTime = Helper.CleanString(flightDepartureTime);
 
             if (requestDepartureTime.Length < flightDepartureTime.Length)
             {
@@ -23,11 +23,6 @@ namespace FlightPlanner.Services.Validators
             }
 
             return requestDepartureTime == flightDepartureTime;
-        }
-
-        private static string StringClean(string result)
-        {
-            return result.Trim().ToLower();
         }
     }
 }
